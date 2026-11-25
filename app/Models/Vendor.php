@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+
+class Vendor extends Model
+{
+    use HasFactory, Notifiable;
+
+    public static function forUser(User $user): ?self
+    {
+        return $user->vendor;
+    }
+
+    public function bills(): HasMany
+    {
+        return $this->hasMany(Bill::class);
+    }
+
+    protected $fillable = [
+        'user_id', 'name', 'stall_number', 'contract_until', 'status', 'approval_status', 'contact_number',
+        'email', 'residential_address', 'photo_path', 'market_section',
+        'monthly_rent', 'billing_cycle', 'contract_start_date', 'contract_end_date',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'contract_until' => 'date',
+            'contract_start_date' => 'date',
+            'contract_end_date' => 'date',
+            'monthly_rent' => 'decimal:2',
+        ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function rentals(): HasMany
+    {
+        return $this->hasMany(Rental::class);
+    }
+
+    public function supportRequests(): HasMany
+    {
+        return $this->hasMany(SupportRequest::class);
+    }
+}
